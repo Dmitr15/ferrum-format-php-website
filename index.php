@@ -213,16 +213,16 @@ include_once "formhandler.php";
                     <label class="text-center" for="priceFrom">Фильтрация результата поиска</label>
                     <label class="text-center" for="priceFrom">По цене:</label>
                     <div class="col-sm-6">                     
-                        <input type="text" name="startPrice" id="priceFrom" class="form-control price_from1" placeholder="Цена от" value="<?=$startprice?>" >                      
+                        <input type="text" name="startPrice" id="priceFrom" class="form-control price_from1" placeholder="Цена от" value="<?=htmlspecialchars($_GET["startPrice"])?>" >                      
                     </div>
 
                     <div class="col-sm-6">
-                        <input type="text" id="priceBefore" name="andPrice" class="form-control price_before" placeholder="Цена до" value="<?=$endprice?>" >                       
+                        <input type="text" id="priceBefore" name="andPrice" class="form-control price_before" placeholder="Цена до" value="<?=htmlspecialchars($_GET["andPrice"])?>" >                       
                     </div>
 
                     <label class="text-center" for="brand-select">Фильтрация по бренду:</label>
                     <div class="col-12 select-lines">              
-                        <select class="form-select" name="brand" id="brand-select"> 
+                        <select class="form-select" name="brand" id="brand-select">
                         <option value >Выберите бренд</option>                         
                             <?php brandMenu();?>              
                         </select>
@@ -230,15 +230,8 @@ include_once "formhandler.php";
 
                     <label class="text-center" for="descriptionName">Фильтрация по описанию:</label>
                     <div class="col-12 select-lines">                 
-                    <?php
-                    if (htmlspecialchars($_GET["description"])!="" && $_GET["clearFilter"]=="") {                                         
-                        echo'<textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required>'.htmlspecialchars($_GET["description"]).'</textarea>';
-                    }
-                    else{
-                        echo'<textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required></textarea>';
-                    }
-                        ?>
-                        <div class="invalid-feedback">Valid first name is required</div>                       
+                    <?php descriptionHandler()?>
+                                               
                     </div>
 
                     <label class="text-center" for='firstName'>Фильтрация по наименованию:</label>
