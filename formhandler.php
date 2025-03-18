@@ -1,54 +1,64 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
-if($_SERVER["REQUEST_METHOD"]=="GET"){
-    $startprice =  htmlspecialchars($_GET["startPrice"]);
-    $endprice =  htmlspecialchars($_GET["andPrice"]);
-    $brand = htmlspecialchars($_GET["brand"]);
-    $description = htmlspecialchars($_GET["description"]);
-    $nameProduct = htmlspecialchars($_GET["nameProduct"]);
-    $clearFilter = htmlspecialchars($_GET["clearFilter"]);
-}
 
-if ($clearFilter !='') {
-    $startprice = '';
-    $endprice = '';
-    $brand = '';
-    $description = '';
-    $nameProduct = '';
+
+if ($_GET["clearFilter"] !='') {
+    
     header("Location: http://localhost/mySite/index.php");
 }
 
 $link = mysqli_connect("localhost", "root", "", "lr2");  
 
+function end_with($sql){
+    if (!str_ends_with($sql, 'WHERE')) {
+        $sql .= ' AND';
+    }
+    return $sql;
+}
+
+function brandMenu(){
+    global $link;
+    $sql = 'SELECT namesupplier FROM supplier';
+    $result = mysqli_query($link, $sql);
+    foreach ($result as $fruit) {
+        if (htmlspecialchars($_GET["brand"]) != '' && htmlspecialchars($_GET["brand"]) == $fruit["namesupplier"]) {
+            echo '<option value="'.$fruit["namesupplier"].'" selected>'.$fruit["namesupplier"].'</option>';
+        }else {                                   
+            echo '<option value="'.$fruit["namesupplier"].'">'.$fruit["namesupplier"].'</option>';
+        }
+    }
+}
+
+
 function sqlFilter(){
-    global $link, $startprice, $endprice, $brand, $description, $nameProduct;
-    $sql="SELECT supplier.namesupplier, product.img_path, product.name, product.description, product.cost FROM supplier, product WHERE supplier.id= product.id_supplier";
-    $sql1 = "";
+    
+    global $link;
+    $sql="SELECT supplier.namesupplier, product.img_path, product.name, product.description, product.cost FROM product right outer join supplier on supplier.id= product.id_supplier";
 
-    if (strlen($startprice) !=0  && strlen($endprice) ==0 ) {
-        $sql1 = $sql." AND product.cost >= CAST($startprice AS SIGNED) ORDER BY product.cost DESC";
+    if (count($_GET)>0) {
+        
+        $sql .=' WHERE';
+        if (!empty(htmlspecialchars($_GET["brand"]))) {
+            $sql = end_with($sql)." supplier.namesupplier = '".htmlspecialchars($_GET["brand"])."'";
+        }
+        if (!empty(htmlspecialchars($_GET["description"]))) {
+            $sql = end_with($sql)." product.description LIKE '%".htmlspecialchars($_GET["description"])."%'";
+        }
+        if (!empty(htmlspecialchars($_GET["nameProduct"]))) {
+            $sql = end_with($sql)." product.name LIKE '%".htmlspecialchars($_GET["nameProduct"])."%'";
+        }
+        if (strlen(htmlspecialchars($_GET["startPrice"])) !=0  && strlen(htmlspecialchars($_GET["andPrice"])) ==0 ) {
+            $sql = end_with($sql)." product.cost >= CAST(".htmlspecialchars($_GET["startPrice"]) ."AS SIGNED) ORDER BY product.cost DESC";
+        }
+        if (strlen(htmlspecialchars($_GET["startPrice"])) ==0  && strlen(htmlspecialchars($_GET["andPrice"])) !=0) {
+            $sql = end_with($sql)." product.cost <= CAST(".htmlspecialchars($_GET["andPrice"])."AS SIGNED) ORDER BY product.cost ASC";
+        }
+        if (strlen(htmlspecialchars($_GET["startPrice"])) != 0  && strlen(htmlspecialchars($_GET["andPrice"])) !=0) {
+            $sql = end_with($sql)." product.cost BETWEEN CAST(".htmlspecialchars($_GET["startPrice"])."AS SIGNED) AND CAST(".htmlspecialchars($_GET["andPrice"])."AS SIGNED) ORDER BY product.cost ASC";
+        }
+        
     }
-    if (strlen($startprice) ==0  && strlen($endprice) !=0) {
-        $sql1 = $sql." AND product.cost <= CAST($endprice AS SIGNED) ORDER BY product.cost ASC";
-    }
-    if (strlen($startprice) != 0  && strlen($endprice) !=0) {
-        $sql1 = $sql." AND product.cost BETWEEN CAST($startprice AS SIGNED) AND CAST($endprice AS SIGNED) ORDER BY product.cost ASC";
-    }
-    if (!empty($brand)) {
-        $sql1 = $sql." AND supplier.namesupplier = '$brand'";
-    }
-    if (!empty($description)) {
-        $sql1 = $sql." AND product.description LIKE '%$description%'";
-    }
-    if (!empty($nameProduct)) {
-        $sql1 = $sql." AND product.name LIKE '%$nameProduct%'";
-    }
-    if(strlen($sql1) ==0){
-        $result = mysqli_query($link, $sql);
-    }
-    else{
-        $result = mysqli_query($link, $sql1);
-    }
-
+    
+    $result = mysqli_query($link, $sql);
 return $result;
 }
