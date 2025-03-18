@@ -224,23 +224,15 @@ include_once "formhandler.php";
                     <div class="col-12 select-lines">              
                         <select class="form-select" name="brand" id="brand-select"> 
                         <option value >Выберите бренд</option>                         
-                            <?php $sql = 'SELECT namesupplier FROM supplier';                                                                                     
-                            $result = mysqli_query($link, $sql);
-                            foreach ($result as $fruit): 
-                                if ($brand != '' && $brand == $fruit["namesupplier"]) {
-                                    echo '<option selected>'.$fruit["namesupplier"].'</option>';
-                                }else {                                   
-                                    echo '<option>'.$fruit["namesupplier"].'</option>';
-                                }?>
-                            <?php endforeach;?>
+                            <?php brandMenu();?>              
                         </select>
                     </div>
 
                     <label class="text-center" for="descriptionName">Фильтрация по описанию:</label>
                     <div class="col-12 select-lines">                 
                     <?php
-                    if ($description!="" && $clearFilter=="") {                                         
-                        echo'<textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required>'.$description.'</textarea>';
+                    if (htmlspecialchars($_GET["description"])!="" && $_GET["clearFilter"]=="") {                                         
+                        echo'<textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required>'.htmlspecialchars($_GET["description"]).'</textarea>';
                     }
                     else{
                         echo'<textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required></textarea>';
@@ -251,7 +243,7 @@ include_once "formhandler.php";
 
                     <label class="text-center" for='firstName'>Фильтрация по наименованию:</label>
                     <div class="col-12 select-lines">                  
-                        <input type="text" id="firstName" name="nameProduct" class="form-control" placeholder="Введите наименование товара" value="<?=$nameProduct?>" >                       
+                        <input type="text" id="firstName" name="nameProduct" class="form-control" placeholder="Введите наименование товара" value="<?=htmlspecialchars($_GET["nameProduct"])?>" >                       
                     </div>
 
                     <div class="col-12 text-center filters-btns">
