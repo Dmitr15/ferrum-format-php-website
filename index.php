@@ -1,5 +1,7 @@
 <?php
 include_once "formhandler.php";
+include_once "suppliers.php";
+//include_once ".php";
 ?>
 
 <!DOCTYPE html>
@@ -230,13 +232,13 @@ include_once "formhandler.php";
 
                     <label class="text-center" for="descriptionName">Фильтрация по описанию:</label>
                     <div class="col-12 select-lines">                 
-                    <?php descriptionHandler()?>
-                                               
+                    
+                    <textarea type="text" name="description" id="descriptionName" class="form-control" placeholder="Введите описание товара" required><?php descriptionHandler()?></textarea>                   
                     </div>
 
                     <label class="text-center" for='firstName'>Фильтрация по наименованию:</label>
                     <div class="col-12 select-lines">                  
-                        <input type="text" id="firstName" name="nameProduct" class="form-control" placeholder="Введите наименование товара" value="<?=htmlspecialchars($_GET["nameProduct"])?>" >                       
+                        <input type="text" id="firstName" name="nameProduct" class="form-control" placeholder="Введите наименование товара" value="<?=$_GET["nameProduct"]?>" >                       
                     </div>
 
                     <div class="col-12 text-center filters-btns">
